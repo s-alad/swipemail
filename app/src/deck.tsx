@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { GestureDetector, usePanGesture } from 'react-native-gesture-handler'
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
 import { scheduleOnRN } from 'react-native-worklets'
@@ -11,20 +11,25 @@ type Email = { id: string, from: string, subject: string, text: string, html: st
 type Action = 'keep' | 'delete' | 'archive'
 
 export function Deck() {
-  const [emails, setEmails] = useState<Email[]>([])
+  const client = useQueryClient()
   const x = useSharedValue(0)
   const y = useSharedValue(0)
 
-  const load = () => call('/mail').then((r) => r.json()).then(setEmails)
-  useEffect(() => { load() }, [])
+  const mail = useQuery({ queryKey: ['mail'], queryFn: () => call('/mail').then(json<Email[]>) })
+  const emails = mail.data ?? []
+
+  const mutation = useMutation({
+    mutationFn: ({ email, action }: { email: Email, action: Action }) => call(`/mail/${email.id}/${action}`, { method: 'POST' }).then(ok),
+    onMutate: ({ email }) => client.setQueryData<Email[]>(['mail'], (list) => list?.filter((e) => e.id !== email.id)),
+    onError: (_, { email }) => client.setQueryData<Email[]>(['mail'], (list) => [email, ...(list ?? [])]),
+    onSettled: () => !client.getQueryData<Email[]>(['mail'])?.length && client.invalidateQueries({ queryKey: ['mail'] }),
+    retry: 2,
+  })
 
   const swipe = (action: Action) => {
-    const [top, ...rest] = emails
-    call(`/mail/${top.id}/${action}`, { method: 'POST' })
+    mutation.mutate({ email: emails[0], action })
     x.value = 0
     y.value = 0
-    setEmails(rest)
-    if (!rest.length) load()
   }
 
   const pan = usePanGesture({
@@ -61,11 +66,19 @@ export function Deck() {
             </Animated.View>
           </GestureDetector>
         )}
-        {!top && <Text style={styles.muted}>inbox zero</Text>}
+        {mail.isFetching && !top && <Text style={styles.muted}>loading</Text>}
+        {mail.isError && <Pressable onPress={() => mail.refetch()}><Text style={styles.muted}>couldn't load, tap to retry</Text></Pressable>}
+        {mail.isSuccess && !mail.isFetching && !top && <Text style={styles.muted}>inbox zero</Text>}
       </View>
       <Text style={styles.muted}>← delete    ↑ archive    keep →</Text>
     </View>
   )
+}
+
+const json = <T,>(r: Response): Promise<T> => ok(r).then(() => r.json())
+
+const ok = async (r: Response) => {
+  if (!r.ok) throw new Error(`${r.status}`)
 }
 
 function Card({ email }: { email: Email }) {

@@ -4,6 +4,7 @@
   "main": "index.ts",
   "dependencies": {
     "@better-auth/expo": "^1.7.28",
+    "@tanstack/react-query": "^5.108.4",
     "better-auth": "^1.7.28",
     "expo": "~58.1.0",
     "expo-constants": "~58.0.16",
