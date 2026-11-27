@@ -79,7 +79,7 @@ export function Deck() {
         )}
         {mail.isSuccess && !mail.isFetching && !top && <Text style={styles.muted}>inbox zero</Text>}
       </View>
-      <Text style={styles.muted}>← delete ↑ archive keep →</Text>
+      <Text style={styles.muted}>{'← delete     ↑ archive     keep →'}</Text>
     </View>
   )
 }
