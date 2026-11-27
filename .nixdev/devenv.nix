@@ -22,7 +22,12 @@
   # processes.dev.exec = "${lib.getExe pkgs.watchexec} -n -- ls -la";
 
   # https://devenv.sh/services/
-  # services.postgres.enable = true;
+  services.postgres = {
+    enable = true;
+    listen_addresses = "127.0.0.1";
+    initialDatabases = [ { name = "swipemail"; } ];
+  };
+  env.DATABASE_URL = "postgres://localhost/swipemail";
 
   # https://devenv.sh/scripts/
   scripts.hello.exec = ''
