@@ -4,22 +4,23 @@ import { GestureDetector, usePanGesture } from 'react-native-gesture-handler'
 import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated'
 import { scheduleOnRN } from 'react-native-worklets'
 import { StyleSheet } from 'react-native-unistyles'
-import { call } from './auth'
+import type { InferRequestType, InferResponseType } from 'hono/client'
+import { client as api } from './auth'
 import EmailView from './email-view'
 
-type Email = { id: string, from: string, subject: string, text: string, html: string | null }
-type Action = 'keep' | 'delete' | 'archive'
+type Email = InferResponseType<typeof api.mail.$get>[number]
+type Action = InferRequestType<typeof api.mail[':id'][':action']['$post']>['param']['action']
 
 export function Deck() {
   const client = useQueryClient()
   const x = useSharedValue(0)
   const y = useSharedValue(0)
 
-  const mail = useQuery({ queryKey: ['mail'], queryFn: () => call('/mail').then((r): Promise<Email[]> => r.json()) })
+  const mail = useQuery({ queryKey: ['mail'], queryFn: () => api.mail.$get().then((r) => r.json()) })
   const emails = mail.data ?? []
 
   const mutation = useMutation({
-    mutationFn: ({ email, action }: { email: Email, action: Action }) => call(`/mail/${email.id}/${action}`, { method: 'POST' }),
+    mutationFn: ({ email, action }: { email: Email, action: Action }) => api.mail[':id'][':action'].$post({ param: { id: email.id, action } }),
     onMutate: ({ email }) => client.setQueryData<Email[]>(['mail'], (list) => list?.filter((e) => e.id !== email.id)),
     onError: (_, { email }) => client.setQueryData<Email[]>(['mail'], (list) => [email, ...(list ?? [])]),
     onSettled: () => client.isMutating() === 1 && !client.getQueryData<Email[]>(['mail'])?.length && client.invalidateQueries({ queryKey: ['mail'] }),
