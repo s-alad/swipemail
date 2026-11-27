@@ -15,6 +15,7 @@
 
   # https://devenv.sh/languages/
   languages.javascript.enable = true;
+  languages.javascript.package = pkgs.nodejs_26;
   languages.javascript.npm.enable = true;
 
   # https://devenv.sh/processes/
