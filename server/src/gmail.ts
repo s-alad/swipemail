@@ -19,7 +19,7 @@ export async function inbox(token: string, seen: Set<string>) {
       date: mail.date ?? new Date(),
       list: list?.id?.name ?? null,
       unsubscribe: Boolean(list?.unsubscribe),
-      text: mail.text ?? '',
+      text: mail.text?.replace(/\s*\n\s*/g, '\n').trim() || data.snippet || '',
     }
   }))
 }
