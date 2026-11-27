@@ -9,7 +9,7 @@ import { client as api } from './auth'
 import EmailView from './email-view'
 
 type Email = InferResponseType<typeof api.mail.$get>[number]
-type Action = InferRequestType<typeof api.mail[':id'][':action']['$post']>['param']['action']
+type Action = InferRequestType<(typeof api.mail)[':id'][':action']['$post']>['param']['action']
 
 export function Deck() {
   const client = useQueryClient()
@@ -20,10 +20,14 @@ export function Deck() {
   const emails = mail.data ?? []
 
   const mutation = useMutation({
-    mutationFn: ({ email, action }: { email: Email, action: Action }) => api.mail[':id'][':action'].$post({ param: { id: email.id, action } }),
+    mutationFn: ({ email, action }: { email: Email; action: Action }) =>
+      api.mail[':id'][':action'].$post({ param: { id: email.id, action } }),
     onMutate: ({ email }) => client.setQueryData<Email[]>(['mail'], (list) => list?.filter((e) => e.id !== email.id)),
     onError: (_, { email }) => client.setQueryData<Email[]>(['mail'], (list) => [email, ...(list ?? [])]),
-    onSettled: () => client.isMutating() === 1 && !client.getQueryData<Email[]>(['mail'])?.length && client.invalidateQueries({ queryKey: ['mail'] }),
+    onSettled: () =>
+      client.isMutating() === 1 &&
+      !client.getQueryData<Email[]>(['mail'])?.length &&
+      client.invalidateQueries({ queryKey: ['mail'] }),
     retry: 2,
   })
 
@@ -68,10 +72,14 @@ export function Deck() {
           </GestureDetector>
         )}
         {mail.isFetching && !top && <Text style={styles.muted}>loading</Text>}
-        {mail.isError && <Pressable onPress={() => mail.refetch()}><Text style={styles.muted}>couldn't load, tap to retry</Text></Pressable>}
+        {mail.isError && (
+          <Pressable onPress={() => mail.refetch()}>
+            <Text style={styles.muted}>couldn't load, tap to retry</Text>
+          </Pressable>
+        )}
         {mail.isSuccess && !mail.isFetching && !top && <Text style={styles.muted}>inbox zero</Text>}
       </View>
-      <Text style={styles.muted}>← delete    ↑ archive    keep →</Text>
+      <Text style={styles.muted}>← delete ↑ archive keep →</Text>
     </View>
   )
 }
@@ -79,11 +87,19 @@ export function Deck() {
 function Card({ email }: { email: Email }) {
   return (
     <View style={[styles.layer, styles.card]}>
-      <Text style={styles.muted} numberOfLines={1}>{email.from}</Text>
-      <Text style={styles.subject} numberOfLines={3}>{email.subject}</Text>
-      {email.html
-        ? <View style={styles.email} pointerEvents="none"><EmailView html={email.html} dom={{ scrollEnabled: false }} /></View>
-        : <Text style={styles.body}>{email.text}</Text>}
+      <Text style={styles.muted} numberOfLines={1}>
+        {email.from}
+      </Text>
+      <Text style={styles.subject} numberOfLines={3}>
+        {email.subject}
+      </Text>
+      {email.html ? (
+        <View style={styles.email} pointerEvents="none">
+          <EmailView html={email.html} dom={{ scrollEnabled: false }} />
+        </View>
+      ) : (
+        <Text style={styles.body}>{email.text}</Text>
+      )}
     </View>
   )
 }

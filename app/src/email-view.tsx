@@ -5,7 +5,7 @@ import type { DOMProps } from 'expo/dom'
 
 const width = 600
 
-export default function EmailView({ html }: { html: string, dom?: DOMProps }) {
+export default function EmailView({ html }: { html: string; dom?: DOMProps }) {
   const box = useRef<HTMLDivElement>(null)
   const [size, setSize] = useState({ scale: 1, height: 0 })
 
@@ -23,7 +23,14 @@ export default function EmailView({ html }: { html: string, dom?: DOMProps }) {
       <iframe
         srcDoc={html}
         sandbox=""
-        style={{ width, height: size.height, border: 0, transform: `scale(${size.scale})`, transformOrigin: '0 0', background: '#fff' }}
+        style={{
+          width,
+          height: size.height,
+          border: 0,
+          transform: `scale(${size.scale})`,
+          transformOrigin: '0 0',
+          background: '#fff',
+        }}
       />
     </div>
   )

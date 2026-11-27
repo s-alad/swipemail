@@ -12,7 +12,10 @@ export default function Index() {
     <View style={styles.screen}>
       <Text style={styles.title}>swipemail</Text>
       <Text style={styles.subtitle}>clean your inbox one swipe at a time</Text>
-      <Pressable style={styles.button} onPress={() => auth.signIn.social({ provider: 'google', callbackURL: Linking.createURL('/') })}>
+      <Pressable
+        style={styles.button}
+        onPress={() => auth.signIn.social({ provider: 'google', callbackURL: Linking.createURL('/') })}
+      >
         <Text style={styles.label}>continue with google</Text>
       </Pressable>
     </View>

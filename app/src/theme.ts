@@ -26,7 +26,7 @@ const dark: typeof light = {
   gap: light.gap,
 }
 
-type themes = { light: typeof light, dark: typeof dark }
+type themes = { light: typeof light; dark: typeof dark }
 
 declare module 'react-native-unistyles' {
   export interface UnistylesThemes extends themes {}
