@@ -11,6 +11,8 @@
 - NEVER WRITE CODE BEFORE WE AGREE ON THE ARCHITECTURE AND TECH STACK. WALK ME THROUGH EACH PIECE AND WAIT FOR MY APPROVAL.
 - FOR EVERY CONCERN (AUTH, DATA, UI, STORAGE), FIND THE WELL ADOPTED LIBRARY THAT OWNS THE WHOLE CONCERN AND PICK THE DESIGN THAT DELETES THE MOST CODE. QUESTION EVERY FILE THAT EXISTS ONLY TO GLUE THINGS TOGETHER.
 
+- NEVER WRITE TESTS. NO TESTS EVER.
+
 ## Everything else
 
 - Work with me in a direct, simple, and well defined scoped way.
@@ -23,7 +25,6 @@
 - Keep things simple: simple descriptions, simple comments, simple function names.
 - Code should be self commenting, do not add comments unless necessary or required to reveal new knowledge.
 - Keep code changes focused strictly on the requested deliverable.
-- Keep tests proportional: add only simple, valuable tests for the changed behavior. Do not write unnecessary tests.
 - Do not preserve backward compatibility unless necessary. Remove obsolete paths instead of
   adding compatibility layers, fallbacks, or migrations.
 - Choose the simplest implementation that fully meets the current
@@ -63,4 +64,3 @@
 - Reduce total variable count by inlining when a value is only used once.
 - When a function has several validation branches or supporting details, make the main function read as the happy path and move supporting details into small helpers below it.
 - Keep helpers close to the code they support, below the main export when that improves readability.
-- Test actual implementation, do not duplicate logic into tests
