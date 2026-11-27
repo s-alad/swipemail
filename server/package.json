@@ -4,7 +4,9 @@
   "scripts": {
     "dev": "node --env-file-if-exists=.env --watch src/index.ts",
     "start": "node --env-file-if-exists=.env src/index.ts",
-    "db": "drizzle-kit push"
+    "gen": "auth generate --config src/auth.ts --output src/auth-schema.ts -y",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "dependencies": {
     "@better-auth/expo": "^1.7.28",
