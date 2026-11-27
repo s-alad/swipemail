@@ -1,7 +1,7 @@
 import { pgTable, text, timestamp, boolean, serial, primaryKey } from 'drizzle-orm/pg-core'
 import { user } from './auth-schema.ts'
 
-export const actions = ['keep', 'delete', 'archive'] as const
+export const actions = ['keep', 'delete', 'archive', 'unsubscribe'] as const
 
 export const email = pgTable(
   'email',

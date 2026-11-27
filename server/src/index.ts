@@ -3,7 +3,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { zValidator } from '@hono/zod-validator'
 import { z } from 'zod'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, ne } from 'drizzle-orm'
 import { auth } from './auth.ts'
 import { db } from './db.ts'
 import { account } from './auth-schema.ts'
@@ -30,7 +30,10 @@ const app = new Hono<{ Variables: { user: string; token: string } }>()
   })
   .get('/mail', async (c) => {
     const userId = c.get('user')
-    const seen = await db.select({ id: swipe.emailId }).from(swipe).where(eq(swipe.userId, userId))
+    const seen = await db
+      .select({ id: swipe.emailId })
+      .from(swipe)
+      .where(and(eq(swipe.userId, userId), ne(swipe.action, 'unsubscribe')))
     const emails = await inbox(c.get('token'), new Set(seen.map((s) => s.id)))
     if (emails.length)
       await db
@@ -43,9 +46,9 @@ const app = new Hono<{ Variables: { user: string; token: string } }>()
   })
   .post('/mail/:id/:action', zValidator('param', z.object({ id: z.string(), action: z.enum(actions) })), async (c) => {
     const { id, action } = c.req.valid('param')
-    await act(c.get('token'), id, action)
+    const open = await act(c.get('token'), id, action)
     await db.insert(swipe).values({ userId: c.get('user'), emailId: id, action })
-    return c.body(null, 204)
+    return c.json({ open })
   })
 
 export type AppType = typeof app

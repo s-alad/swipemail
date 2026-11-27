@@ -37,6 +37,29 @@ export async function act(token: string, id: string, action: (typeof actions)[nu
   if (action === 'delete') await api.users.messages.trash({ userId: 'me', id })
   if (action === 'archive')
     await api.users.messages.modify({ userId: 'me', id, requestBody: { removeLabelIds: ['INBOX'] } })
+  if (action === 'unsubscribe') return unsubscribe(api, id)
+  return null
+}
+
+async function unsubscribe(api: ReturnType<typeof client>, id: string) {
+  const { data } = await api.users.messages.get({
+    userId: 'me',
+    id,
+    format: 'metadata',
+    metadataHeaders: ['List-Unsubscribe', 'List-Unsubscribe-Post'],
+  })
+  const header = (name: string) =>
+    data.payload?.headers?.find((h) => h.name?.toLowerCase() === name.toLowerCase())?.value ?? ''
+  const links = [...header('List-Unsubscribe').matchAll(/<([^>]+)>/g)].map((m) => m[1])
+  const https = links.find((link) => link.startsWith('https:'))
+  if (https && /one-click/i.test(header('List-Unsubscribe-Post'))) {
+    const response = await fetch(https, {
+      method: 'POST',
+      body: new URLSearchParams({ 'List-Unsubscribe': 'One-Click' }),
+    })
+    if (response.ok) return null
+  }
+  return https ?? links[0] ?? null
 }
 
 function client(token: string) {
