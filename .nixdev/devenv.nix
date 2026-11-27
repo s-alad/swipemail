@@ -19,7 +19,7 @@
   languages.javascript.npm.enable = true;
 
   # https://devenv.sh/processes/
-  # processes.dev.exec = "${lib.getExe pkgs.watchexec} -n -- ls -la";
+  processes.server.exec = "cd .. && npm -w server run dev";
 
   # https://devenv.sh/services/
   services.postgres = {
