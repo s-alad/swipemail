@@ -15,14 +15,14 @@ export function Deck() {
   const x = useSharedValue(0)
   const y = useSharedValue(0)
 
-  const mail = useQuery({ queryKey: ['mail'], queryFn: () => call('/mail').then(json<Email[]>) })
+  const mail = useQuery({ queryKey: ['mail'], queryFn: () => call('/mail').then((r): Promise<Email[]> => r.json()) })
   const emails = mail.data ?? []
 
   const mutation = useMutation({
-    mutationFn: ({ email, action }: { email: Email, action: Action }) => call(`/mail/${email.id}/${action}`, { method: 'POST' }).then(ok),
+    mutationFn: ({ email, action }: { email: Email, action: Action }) => call(`/mail/${email.id}/${action}`, { method: 'POST' }),
     onMutate: ({ email }) => client.setQueryData<Email[]>(['mail'], (list) => list?.filter((e) => e.id !== email.id)),
     onError: (_, { email }) => client.setQueryData<Email[]>(['mail'], (list) => [email, ...(list ?? [])]),
-    onSettled: () => !client.getQueryData<Email[]>(['mail'])?.length && client.invalidateQueries({ queryKey: ['mail'] }),
+    onSettled: () => client.isMutating() === 1 && !client.getQueryData<Email[]>(['mail'])?.length && client.invalidateQueries({ queryKey: ['mail'] }),
     retry: 2,
   })
 
@@ -73,12 +73,6 @@ export function Deck() {
       <Text style={styles.muted}>← delete    ↑ archive    keep →</Text>
     </View>
   )
-}
-
-const json = <T,>(r: Response): Promise<T> => ok(r).then(() => r.json())
-
-const ok = async (r: Response) => {
-  if (!r.ok) throw new Error(`${r.status}`)
 }
 
 function Card({ email }: { email: Email }) {

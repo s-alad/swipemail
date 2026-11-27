@@ -10,6 +10,10 @@ export const auth = createAuthClient({
   plugins: [expoClient({ scheme: 'swipemail', storagePrefix: 'swipemail', storage: SecureStore })],
 })
 
-export const call = async (path: string, init?: RequestInit) => Platform.OS === 'web'
-  ? fetch(`${api}${path}`, { ...init, credentials: 'include' })
-  : fetch(`${api}${path}`, { ...init, credentials: 'omit', headers: { cookie: await auth.getCookie() } })
+export const call = async (path: string, init?: RequestInit) => {
+  const response = Platform.OS === 'web'
+    ? await fetch(`${api}${path}`, { ...init, credentials: 'include' })
+    : await fetch(`${api}${path}`, { ...init, credentials: 'omit', headers: { cookie: await auth.getCookie() } })
+  if (!response.ok) throw new Error(`${response.status}`)
+  return response
+}
