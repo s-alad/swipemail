@@ -5,8 +5,9 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } fr
 import { scheduleOnRN } from 'react-native-worklets'
 import { StyleSheet } from 'react-native-unistyles'
 import { call } from './auth'
+import EmailView from './email-view'
 
-type Email = { id: string, from: string, subject: string, text: string }
+type Email = { id: string, from: string, subject: string, text: string, html: string | null }
 type Action = 'keep' | 'delete' | 'archive'
 
 export function Deck() {
@@ -72,7 +73,9 @@ function Card({ email }: { email: Email }) {
     <View style={[styles.layer, styles.card]}>
       <Text style={styles.muted} numberOfLines={1}>{email.from}</Text>
       <Text style={styles.subject} numberOfLines={3}>{email.subject}</Text>
-      <Text style={styles.body}>{email.text}</Text>
+      {email.html
+        ? <View style={styles.email} pointerEvents="none"><EmailView html={email.html} dom={{ scrollEnabled: false }} /></View>
+        : <Text style={styles.body}>{email.text}</Text>}
     </View>
   )
 }
@@ -99,6 +102,7 @@ const styles = StyleSheet.create((theme, rt) => ({
     backgroundColor: theme.colors.card,
   },
   subject: { fontSize: 20, fontWeight: '700', color: theme.colors.text },
+  email: { flex: 1, marginHorizontal: -theme.gap(5), marginBottom: -theme.gap(5) },
   body: { fontSize: 15, lineHeight: 22, color: theme.colors.text },
   muted: { fontSize: 14, color: theme.colors.muted },
 }))

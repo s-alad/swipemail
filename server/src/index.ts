@@ -29,7 +29,7 @@ app.get('/mail', async (c) => {
   const userId = c.get('user')
   const seen = await db.select({ id: swipe.emailId }).from(swipe).where(eq(swipe.userId, userId))
   const emails = await inbox(c.get('token'), new Set(seen.map((s) => s.id)))
-  if (emails.length) await db.insert(email).values(emails.map(({ text, ...e }) => ({ ...e, userId }))).onConflictDoNothing()
+  if (emails.length) await db.insert(email).values(emails.map(({ text, html, ...e }) => ({ ...e, userId }))).onConflictDoNothing()
   return c.json(emails)
 })
 
