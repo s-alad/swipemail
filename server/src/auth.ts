@@ -16,5 +16,5 @@ export const auth = betterAuth({
   },
   account: { encryptOAuthTokens: true },
   plugins: [expo()],
-  trustedOrigins: ['swipemail://', 'exp://'],
+  trustedOrigins: ['swipemail://', 'exp://', 'http://localhost:8081'],
 })

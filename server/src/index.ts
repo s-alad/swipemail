@@ -1,5 +1,6 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import { and, eq } from 'drizzle-orm'
 import { auth } from './auth.ts'
 import { db } from './db.ts'
@@ -8,6 +9,8 @@ import { email, swipe, actions } from './schema.ts'
 import { inbox, act } from './gmail.ts'
 
 const app = new Hono<{ Variables: { user: string, token: string } }>()
+
+app.use(cors({ origin: 'http://localhost:8081', credentials: true }))
 
 app.on(['GET', 'POST'], '/api/auth/*', (c) => auth.handler(c.req.raw))
 
