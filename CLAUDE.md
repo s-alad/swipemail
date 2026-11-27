@@ -1,5 +1,13 @@
 # CLAUDE.md
 
+## Most important
+
+- SIMPLICITY IS THE BEST AND SHOULD ALWAYS BE STRIVED FOR, LESS IS MORE.
+- LESS LINES OF CODE IS BETTER, LESS LINES OF CODE IS A HEURISTIC TO AIM FOR.
+- NO COMMENTS NO COMMENTS UNLESS SUPER STRICTLY NECESSARY FOR WEIRD THINGS NO COMMENTS CODE SHOULD BE SELF DOCUMENTING AND SIMPLE
+
+## Everything else
+
 - Work with me in a direct, simple, and well defined scoped way.
 - Lead with the answer or outcome.
 - Use plain language and briefly explain unfamiliar terms.
