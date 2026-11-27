@@ -1,0 +1,22 @@
+{
+  "plugins": ["typescript", "unicorn", "oxc", "react"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "complexity": [
+      "error",
+      {
+        "max": 20
+      }
+    ],
+    "react/rules-of-hooks": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "ignoreRestSiblings": true
+      }
+    ]
+  },
+  "ignorePatterns": ["**/auth-schema.ts", "**/drizzle/**"]
+}

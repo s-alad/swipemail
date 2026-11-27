@@ -1,0 +1,6 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "printWidth": 120,
+  "ignorePatterns": ["**/auth-schema.ts", "**/drizzle/**", "package-lock.json"]
+}

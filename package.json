@@ -1,4 +1,15 @@
 {
   "private": true,
-  "workspaces": ["app", "server"]
+  "workspaces": [
+    "app",
+    "server"
+  ],
+  "scripts": {
+    "lint": "oxlint",
+    "format": "oxfmt"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.80.0",
+    "oxlint": "^1.95.0"
+  }
 }
