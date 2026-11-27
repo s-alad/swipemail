@@ -14,7 +14,9 @@ export async function inbox(token: string, seen: Set<string>) {
       const { data } = await api.users.messages.get({ userId: 'me', id, format: 'raw' })
       const mail = await simpleParser(Buffer.from(data.raw!, 'base64url'))
       const from = mail.from?.value[0]?.address ?? ''
-      const list = mail.headers.get('list') as { id?: { name?: string }; unsubscribe?: object } | undefined
+      const list = mail.headers.get('list') as
+        | { id?: { name?: string }; unsubscribe?: { url?: string; mail?: string } }
+        | undefined
       return {
         id,
         from,
@@ -22,7 +24,7 @@ export async function inbox(token: string, seen: Set<string>) {
         subject: mail.subject ?? '',
         date: mail.date ?? new Date(),
         list: list?.id?.name ?? null,
-        unsubscribe: Boolean(list?.unsubscribe),
+        unsubscribe: list?.unsubscribe?.url ?? (list?.unsubscribe?.mail ? `mailto:${list.unsubscribe.mail}` : null),
         html: mail.html || null,
         text: mail.text?.replace(/\s*\n\s*/g, '\n').trim() || data.snippet || '',
       }

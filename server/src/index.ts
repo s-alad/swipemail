@@ -35,7 +35,9 @@ const app = new Hono<{ Variables: { user: string; token: string } }>()
     if (emails.length)
       await db
         .insert(email)
-        .values(emails.map(({ text, html, ...e }) => ({ ...e, userId })))
+        .values(
+          emails.map(({ text, html, unsubscribe, ...e }) => ({ ...e, unsubscribe: Boolean(unsubscribe), userId })),
+        )
         .onConflictDoNothing()
     return c.json(emails)
   })
