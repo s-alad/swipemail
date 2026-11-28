@@ -29,6 +29,8 @@
     initialDatabases = [ { name = "swipemail"; } ];
   };
   env.DATABASE_URL = "postgres://localhost/swipemail";
+  env.EXPO_IMAGE_UTILS_NO_SHARP = "1";
+  env.LD_LIBRARY_PATH = lib.makeLibraryPath [ pkgs.zlib ];
 
   # https://devenv.sh/scripts/
   scripts.hello.exec = ''
