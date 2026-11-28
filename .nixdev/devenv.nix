@@ -33,6 +33,7 @@
   env.LD_LIBRARY_PATH = lib.makeLibraryPath [ pkgs.zlib ];
 
   # https://devenv.sh/scripts/
+  scripts.rebuild.exec = "cd $DEVENV_ROOT/../app && npx expo prebuild -p android --no-install && npx expo run:android --no-bundler";
   scripts.hello.exec = ''
     echo hello from $GREET
   '';
