@@ -20,6 +20,7 @@
 
   # https://devenv.sh/processes/
   processes.server.exec = "cd $DEVENV_ROOT/.. && npm -w server run dev";
+  processes.expo.exec = "adb reverse tcp:3000 tcp:3000; adb reverse tcp:8081 tcp:8081; cd $DEVENV_ROOT/../app && npx expo start";
 
   # https://devenv.sh/services/
   services.postgres = {
